@@ -1,11 +1,13 @@
 import { Box, Grid } from "@mui/material";
+import NavBar from "./components/NavBar.tsx/NavBar";
 
 function App() {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container>
         <Grid bgcolor={"coral"} size={12}>
-          Header, size=12
+          {/* Header, size=12 */}
+          <NavBar></NavBar>
         </Grid>
         <Grid bgcolor={"yellow"} size={6}>
           Sidebar, size=6
