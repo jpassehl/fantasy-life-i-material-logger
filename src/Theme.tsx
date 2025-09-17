@@ -29,7 +29,7 @@ export const theme = createTheme({
   palette: {
     ochre: {
       main: "#de9d04",
-      light: "#ffc800",
+      light: "#ffe37f",
       dark: "#966805",
       contrastText: "#242105",
     },
