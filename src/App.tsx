@@ -1,4 +1,4 @@
-import { Box, Grid, ThemeProvider } from "@mui/material";
+import { Box, Container, Grid, ThemeProvider } from "@mui/material";
 import NavBar from "./components/NavBar/NavBar";
 import { theme } from "./Theme";
 import MaterialForm from "./components/MaterialForm/MaterialForm";
