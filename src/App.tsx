@@ -1,4 +1,4 @@
-import { Box, Container, Grid, ThemeProvider } from "@mui/material";
+import { Box, Grid, ThemeProvider } from "@mui/material";
 import NavBar from "./components/NavBar/NavBar";
 import { theme } from "./Theme";
 import MaterialForm from "./components/MaterialForm/MaterialForm";
@@ -11,12 +11,10 @@ function App() {
           <Grid className="app-header" size={12}>
             <NavBar></NavBar>
           </Grid>
-          <Grid className="app-body" size={12}>
-            <Container maxWidth="sm">
-              <Box sx={{ height: "100vh", mt: "24px" }}>
-                <MaterialForm></MaterialForm>
-              </Box>
-            </Container>
+          <Grid justifyContent="center" className="app-body" size={12}>
+            <Box sx={{ height: "100vh", mt: "24px" }}>
+              <MaterialForm></MaterialForm>
+            </Box>
           </Grid>
         </Grid>
       </Box>
