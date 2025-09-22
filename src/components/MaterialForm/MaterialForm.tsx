@@ -1,17 +1,16 @@
 import {
   Button,
+  Checkbox,
   Container,
   FormControl,
   FormControlLabel,
   InputLabel,
   MenuItem,
-  Radio,
-  RadioGroup,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
-import { useForm, type FieldValues } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   gatheringLives,
   materialCategories,
@@ -20,49 +19,61 @@ import {
 import "./MaterialForm.css";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { useState } from "react";
 
-const schema = z.object({
+const materialSchema = z.object({
   name: z.string(),
   type: z.string(),
-  gatherable: z.string(),
+  gatherable: z.boolean(),
   gatheredFrom: z.string(),
   lifeRequired: z.string(),
   category: z.string(),
 });
-type MaterialFormData = z.infer<typeof schema>;
+type MaterialFormData = z.infer<typeof materialSchema>;
 
 interface MaterialFormProps {
   onSubmit: (data: MaterialFormData) => void;
 }
-const MaterialForm = () => {
+const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<MaterialFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(materialSchema),
   });
 
-  function onSubmit(data) {
-    console.log(data);
-  }
+  const [type, setType] = useState("Other");
+  const [gatherable, setGatherable] = useState(false);
+  const [lifeRequired, setLifeRequired] = useState("");
+  const [category, setCategory] = useState("");
 
   return (
     <Container
       sx={{
         bgcolor: "white",
-        height: "100%",
+        height: "40%",
         width: "40%",
         display: "flex",
         justifyContent: "center",
         flexWrap: "wrap",
+        borderRadius: 2,
+        border: 1,
       }}
     >
       <form
         id="materialForm"
         className="material-form"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit((data) => {
+          onSubmit(data);
+          reset();
+          //reset defaults
+          setType("Other");
+          setGatherable(false);
+          setLifeRequired("");
+          setCategory("Other");
+        })}
       >
         <TextField
           id="name"
@@ -81,10 +92,11 @@ const MaterialForm = () => {
           <Select
             labelId="typeLabel"
             id="type"
-            defaultValue={"Other"}
             {...register("type")}
             name="type"
             label="Type"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
           >
             {materialTypes.map((type: string) => (
               <MenuItem key={type} value={type}>
@@ -98,24 +110,18 @@ const MaterialForm = () => {
           )}
         </FormControl>
         <FormControl>
-          <RadioGroup
-            defaultValue={true}
-            {...register("gatherable")}
-            id="gatherable"
-            name="gatherable"
-            row
-          >
-            <FormControlLabel
-              value="true"
-              label="Gatherable"
-              control={<Radio />}
-            />
-            <FormControlLabel
-              value="false"
-              label="Craftable"
-              control={<Radio />}
-            />
-          </RadioGroup>
+          <FormControlLabel
+            label="Gatherable"
+            control={
+              <Checkbox
+                {...register("gatherable")}
+                id="gatherable"
+                name="gatherable"
+                checked={gatherable}
+                onChange={(e) => setGatherable(e.target.checked)}
+              />
+            }
+          />
           {errors.gatherable && (
             <Typography color="error">{errors.gatherable.message}</Typography>
           )}
@@ -139,10 +145,12 @@ const MaterialForm = () => {
           <Select
             labelId="lifeRequiredLabel"
             id="lifeRequired"
-            defaultValue={""}
+            defaultValue=""
             {...register("lifeRequired")}
             name="lifeRequired"
             label="lifeRequired"
+            value={lifeRequired}
+            onChange={(e) => setLifeRequired(e.target.value)}
           >
             {gatheringLives.map((life: string) => (
               <MenuItem key={life} value={life}>
@@ -159,10 +167,12 @@ const MaterialForm = () => {
           <Select
             labelId="categoryLabel"
             id="category"
-            defaultValue={"Other"}
+            defaultValue="Other"
             {...register("category")}
             name="category"
             label="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
           >
             {materialCategories.map((category: string) => (
               <MenuItem key={category} value={category}>
