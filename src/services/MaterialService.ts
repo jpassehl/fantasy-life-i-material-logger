@@ -1,7 +1,7 @@
 import create from "./http-service";
 
 export interface Material {
-  id: number;
+  id?: number;
   name: string;
   type: string;
   gatherable: boolean;

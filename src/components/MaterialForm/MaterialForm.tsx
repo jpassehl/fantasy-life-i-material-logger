@@ -127,7 +127,6 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
           )}
         </FormControl>
         <TextField
-          defaultValue=""
           {...register("gatheredFrom")}
           id="gatheredFrom"
           name="gatheredFrom"

@@ -12,22 +12,64 @@ function App() {
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
 
-  function handleSubmit(newMaterial: {
+  interface MaterialFormWrapper {
     name: string;
     type: string;
     gatherable: boolean;
     gatheredFrom: string;
     lifeRequired: string;
     category: string;
-  }) {
-    console.log(newMaterial);
+  }
+
+  function handleSubmit(newMaterialData: MaterialFormWrapper) {
+    const originalMaterials = [...materials];
+    const formatGatheredFrom = newMaterialData.gatheredFrom.split(/\r?\n/);
+
+    const newMaterialObject: Material = {
+      name: newMaterialData.name,
+      type: newMaterialData.type,
+      gatherable: newMaterialData.gatherable,
+      gatheredFrom: formatGatheredFrom,
+      lifeRequired: newMaterialData.lifeRequired,
+      category: newMaterialData.category,
+    };
+
+    materialService
+      .create(newMaterialObject)
+      //savedMaterial is just an alias we are assigning to this property.
+      .then(({ data: savedMaterial }) => {
+        setMaterials([savedMaterial, ...materials]);
+        reloadTable();
+      })
+      .catch((err) => {
+        //show user an error
+        setError(err.message);
+        //restory list back to original state
+        setMaterials(originalMaterials);
+      });
   }
 
   function handleDelete(id: number): void {
-    console.log(id);
+    const originalMaterials = [...materials];
+    materialService
+      .delete(id)
+      .then(() => {
+        //on sucessful delete, reload table
+        reloadTable();
+      })
+      .catch((err) => {
+        setError(err.message);
+        //restore UI back to original state
+        setMaterials(originalMaterials);
+      });
   }
 
+  //Renter Table For the First Time
   useEffect(() => {
+    reloadTable();
+  }, []);
+
+  function reloadTable() {
     setLoading(true);
     const { request, cancel } = materialService.getAll<Material>();
     request
@@ -43,7 +85,7 @@ function App() {
     return () => {
       cancel();
     };
-  }, []);
+  }
 
   return (
     <>
