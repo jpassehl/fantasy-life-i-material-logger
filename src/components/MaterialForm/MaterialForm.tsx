@@ -11,11 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import {
-  gatheringLives,
-  materialCategories,
-  materialTypes,
-} from "../../constants";
+import { gatheringLives, materialCategories } from "../../constants";
 import "./MaterialForm.css";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,8 +19,7 @@ import { useState } from "react";
 
 const materialSchema = z.object({
   name: z.string(),
-  type: z.string(),
-  gatherable: z.boolean(),
+  crafted: z.boolean(),
   gatheredFrom: z.string(),
   lifeRequired: z.string(),
   category: z.string(),
@@ -44,8 +39,7 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
     resolver: zodResolver(materialSchema),
   });
 
-  const [type, setType] = useState("Other");
-  const [gatherable, setGatherable] = useState(false);
+  const [crafted, setGatherable] = useState(false);
   const [lifeRequired, setLifeRequired] = useState("");
   const [category, setCategory] = useState("");
 
@@ -68,8 +62,6 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
         onSubmit={handleSubmit((data) => {
           onSubmit(data);
           reset();
-          //reset defaults
-          setType("Other");
           setGatherable(false);
           setLifeRequired("");
           setCategory("Other");
@@ -87,43 +79,21 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
         {errors.name && (
           <Typography color="error">{errors.name.message}</Typography>
         )}
-        <FormControl margin="dense" variant="standard" sx={{ width: "100%" }}>
-          <InputLabel id="typeLabel">Type</InputLabel>
-          <Select
-            labelId="typeLabel"
-            id="type"
-            {...register("type")}
-            name="type"
-            label="Type"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          >
-            {materialTypes.map((type: string) => (
-              <MenuItem key={type} value={type}>
-                {type}
-              </MenuItem>
-            ))}
-            <MenuItem value="Other">Other</MenuItem>
-          </Select>
-          {errors.type && (
-            <Typography color="error">{errors.type.message}</Typography>
-          )}
-        </FormControl>
         <FormControl>
           <FormControlLabel
-            label="Gatherable"
+            label="Crafted"
             control={
               <Checkbox
-                {...register("gatherable")}
-                id="gatherable"
-                name="gatherable"
-                checked={gatherable}
+                {...register("crafted")}
+                id="crafted"
+                name="crafted"
+                checked={crafted}
                 onChange={(e) => setGatherable(e.target.checked)}
               />
             }
           />
-          {errors.gatherable && (
-            <Typography color="error">{errors.gatherable.message}</Typography>
+          {errors.crafted && (
+            <Typography color="error">{errors.crafted.message}</Typography>
           )}
         </FormControl>
         <TextField

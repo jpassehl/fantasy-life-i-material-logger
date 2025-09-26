@@ -12,10 +12,12 @@ import {
 
 interface MaterialDataTableProps {
   materialData: Material[];
+  onEdit: (material: Material) => void;
   onDelete: (id: number) => void;
 }
 const MaterialDataTable = ({
   materialData,
+  onEdit,
   onDelete,
 }: MaterialDataTableProps) => {
   return (
@@ -23,13 +25,13 @@ const MaterialDataTable = ({
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Id</TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>Type</TableCell>
-            <TableCell>Gatherable</TableCell>
+            <TableCell>Crafted</TableCell>
             <TableCell>GatheredFrom</TableCell>
             <TableCell>LifeRequired</TableCell>
             <TableCell>Category</TableCell>
+            <TableCell>{/*Edit Button*/}</TableCell>
+            <TableCell>{/*Delete Button*/}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -38,13 +40,16 @@ const MaterialDataTable = ({
               key={row.name}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell>{row.id}</TableCell>
               <TableCell>{row.name}</TableCell>
-              <TableCell>{row.type}</TableCell>
-              <TableCell>{row.gatherable.toString()}</TableCell>
+              <TableCell>{row.crafted.toString()}</TableCell>
               <TableCell>{row.gatheredFrom}</TableCell>
               <TableCell>{row.lifeRequired}</TableCell>
               <TableCell>{row.category}</TableCell>
+              <TableCell>
+                <Button variant="outlined" onClick={() => onEdit(row)}>
+                  Edit
+                </Button>
+              </TableCell>
               <TableCell>
                 <Button variant="contained" onClick={() => onDelete(row.id)}>
                   Delete

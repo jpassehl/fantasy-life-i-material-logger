@@ -13,23 +13,23 @@ function App() {
   const [isLoading, setLoading] = useState(false);
 
   interface MaterialFormWrapper {
+    id?: number;
     name: string;
-    type: string;
-    gatherable: boolean;
-    gatheredFrom: string;
-    lifeRequired: string;
+    crafted: boolean;
+    gatheredFrom?: string;
+    lifeRequired?: string;
     category: string;
   }
 
   function handleSubmit(newMaterialData: MaterialFormWrapper) {
     const originalMaterials = [...materials];
-    const formatGatheredFrom = newMaterialData.gatheredFrom.split(/\r?\n/);
 
-    const newMaterialObject: Material = {
+    const newMaterialObject = {
       name: newMaterialData.name,
-      type: newMaterialData.type,
-      gatherable: newMaterialData.gatherable,
-      gatheredFrom: formatGatheredFrom,
+      crafted: newMaterialData.crafted,
+      gatheredFrom: newMaterialData.gatheredFrom
+        ? newMaterialData.gatheredFrom.split(/\r?\n/)
+        : null,
       lifeRequired: newMaterialData.lifeRequired,
       category: newMaterialData.category,
     };
@@ -47,6 +47,10 @@ function App() {
         //restory list back to original state
         setMaterials(originalMaterials);
       });
+  }
+
+  function handleEdit(material: Material): void {
+    console.log(material);
   }
 
   function handleDelete(id: number): void {
@@ -103,6 +107,7 @@ function App() {
               </Box>
               <MaterialDataTable
                 materialData={materials}
+                onEdit={(material) => handleEdit(material)}
                 onDelete={(id) => handleDelete(id)}
               ></MaterialDataTable>
             </Grid>
