@@ -3,23 +3,18 @@ import NavBar from "./components/NavBar/NavBar";
 import { theme } from "./Theme";
 import MaterialForm from "./components/MaterialForm/MaterialForm";
 import MaterialDataTable from "./components/MaterialDataTable/MaterialDataTable";
-import materialService, { type Material } from "./services/MaterialService";
+import materialService, {
+  type Material,
+  type MaterialFormWrapper,
+} from "./services/MaterialService";
 import { CanceledError } from "./services/api-cilent";
 import { useEffect, useState } from "react";
 
 function App() {
   const [materials, setMaterials] = useState<Material[]>([]);
+  const [material, setMaterial] = useState<Material>();
   const [error, setError] = useState("");
   const [isLoading, setLoading] = useState(false);
-
-  interface MaterialFormWrapper {
-    id?: number;
-    name: string;
-    crafted: boolean;
-    gatheredFrom?: string;
-    lifeRequired?: string;
-    category: string;
-  }
 
   function handleSubmit(newMaterialData: MaterialFormWrapper) {
     const originalMaterials = [...materials];
@@ -47,10 +42,6 @@ function App() {
         //restory list back to original state
         setMaterials(originalMaterials);
       });
-  }
-
-  function handleEdit(material: Material): void {
-    console.log(material);
   }
 
   function handleDelete(id: number): void {
@@ -102,12 +93,13 @@ function App() {
             <Grid justifyContent="center" className="app-body" size={12}>
               <Box sx={{ mt: "24px", mb: "24px" }}>
                 <MaterialForm
+                  material={material}
                   onSubmit={(newMaterial) => handleSubmit(newMaterial)}
                 ></MaterialForm>
               </Box>
               <MaterialDataTable
                 materialData={materials}
-                onEdit={(material) => handleEdit(material)}
+                onEdit={(material) => setMaterial(material)}
                 onDelete={(id) => handleDelete(id)}
               ></MaterialDataTable>
             </Grid>

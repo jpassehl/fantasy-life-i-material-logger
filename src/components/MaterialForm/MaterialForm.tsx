@@ -15,33 +15,66 @@ import { gatheringLives, materialCategories } from "../../constants";
 import "./MaterialForm.css";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { Material } from "../../services/MaterialService";
 
-const materialSchema = z.object({
-  name: z.string(),
-  crafted: z.boolean(),
-  gatheredFrom: z.string(),
-  lifeRequired: z.string(),
-  category: z.string(),
-});
-type MaterialFormData = z.infer<typeof materialSchema>;
+const MaterialSchema = z
+  .object({
+    id: z.number().or(z.undefined()),
+    name: z.string(),
+    crafted: z.boolean(),
+    gatheredFrom: z.string().or(z.undefined()),
+    lifeRequired: z.string().or(z.undefined()),
+    category: z.string(),
+  })
+  .transform((material) => ({
+    ...material,
+    gatheredFrom: material.gatheredFrom?.replace("\\n", " "),
+  }));
+type MaterialFormData = z.infer<typeof MaterialSchema>;
 
 interface MaterialFormProps {
+  material?: Material;
   onSubmit: (data: MaterialFormData) => void;
 }
-const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
+const MaterialForm = ({ material, onSubmit }: MaterialFormProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm<MaterialFormData>({
-    resolver: zodResolver(materialSchema),
+    resolver: zodResolver(MaterialSchema),
   });
 
   const [crafted, setGatherable] = useState(false);
   const [lifeRequired, setLifeRequired] = useState("");
   const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    if (material) {
+      MaterialSchema.parse({
+        ...material,
+        gatheredFrom: material.gatheredFrom?.join("\r\n"),
+      });
+
+      reset({
+        id: material.id,
+        name: material.name,
+        crafted: material.crafted,
+        gatheredFrom: material.gatheredFrom?.join("\r\n"),
+        lifeRequired: material.lifeRequired,
+        category: material.category,
+      });
+
+      /*       setValue("id", material.id);
+      setValue("name", material.name);
+      setValue("crafted", material.crafted);
+      setValue("gatheredFrom", material.gatheredFrom?.join("\r\n"));
+      setValue("lifeRequired", material.lifeRequired);
+      setValue("category", material.name); */
+    }
+  }, [material, reset]);
 
   return (
     <Container
@@ -56,9 +89,13 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
         border: 1,
       }}
     >
+      <div className="form-header">
+        <Typography variant="h6">
+          {material ? "Edit Material Form" : "New Material Form"}
+        </Typography>
+      </div>
       <form
         id="materialForm"
-        className="material-form"
         onSubmit={handleSubmit((data) => {
           onSubmit(data);
           reset();
@@ -72,10 +109,10 @@ const MaterialForm = ({ onSubmit }: MaterialFormProps) => {
           label="Name"
           variant="standard"
           margin="dense"
-          defaultValue=""
           {...register("name")}
           sx={{ width: "100%" }}
         />
+
         {errors.name && (
           <Typography color="error">{errors.name.message}</Typography>
         )}
